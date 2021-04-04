@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 const signupSchema = new mongoose.Schema({
-    first_name:{
-        type: String,
-    },
-    last_name:{
-        type: String,
-    },
+    
     username:{
         type: String,
     },
@@ -14,10 +9,6 @@ const signupSchema = new mongoose.Schema({
     },
     password:{
         type: String,
-    },
-    is_active:{
-        type: Boolean,
-        default: true,
     }
 });
 
