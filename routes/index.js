@@ -3,6 +3,23 @@ var router = express.Router();
 var authModel = require('../models/gallery');
 var apartmentModel = require('../models/apartment');
 var bookingModel = require('../models/booking');
+const multer = require("multer");
+
+
+var Storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+      callback(null, "./public/images");
+    },
+    filename: function (req, file, callback) {
+      callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
+    },
+  });
+  
+  var upload = multer({
+    storage: Storage,
+  }).single("apartment_image"); //Field name and max count
+  
+
 /* GET home page. */
 router.get('/', function(req,res,next){
   authModel.find({}).limit(6).then(function(imagegallery){
@@ -45,7 +62,6 @@ router.get('/apartmentedit/:id', function(req, res) {
     if(err){
       res.redirect('/apartmentlist');
     }else{
-      console.log(result);
       res.render('editapartment',{
         apartment: result
       });
@@ -54,14 +70,37 @@ router.get('/apartmentedit/:id', function(req, res) {
 });
 
 
-router.post('/apartmentedit/:id', function(req, res) {
-  console.log(req.params.id);
-  apartmentModel.findByIdAndUpdate(req.params.id,req.params,function(err){
+router.post('/apartmentedit/:id', upload,function(req, res,next) {
+  
+    console.log(req.body.apartment_name)
+  var apartDetails = {
+        
+        name: req.body.apartment_name,
+        location: req.body.location,
+        bedrooms: req.body.bedrooms,
+        bathrooms: req.body.bathrooms,
+        price: req.body.price,
+        rent: req.body.Rent,
+        service: req.body.service,
+        security: req.body.security,
+        release: req.body.release,
+        flatsize: req.body.flatsize,
+        floor: req.body.floor,
+        roomcategory: req.body.roomcategory,
+        facilities: req.body.facilities,
+        additionalfacilities: req.body.additionalfacilities,
+        city: req.body.city,
+        country: req.body.country,
+        about: req.body.about,
+        image: req.file.filename,
+      };
+  console.log(apartDetails)
+  apartmentModel.findByIdAndUpdate(req.params.id,apartDetails,function(err){
     if(err){
       res.redirect('/apartmentlist');
     }else{
-      console.log(req.params);
-      res.redirect('apartmentlist');
+      console.log(apartDetails);
+      res.redirect('/apartmentlist');
     }
   })    
 });
